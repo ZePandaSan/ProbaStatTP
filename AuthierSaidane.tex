@@ -1,0 +1,142 @@
+%pdflatex -halt-on-error -aux-directory=tmp -output-directory=tmp rapport.tex%
+
+\documentclass{article}
+\usepackage{amsmath}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage[francais]{babel}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    language=python,
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{Rapport sur le TP de probabilité et statistiques}
+\author{Wassim Saidane, Aurélien Authier}
+\date{}
+
+\begin{document}
+    \pagenumbering{gobble}
+    \maketitle
+    \tableofcontents
+    \newpage
+    \pagenumbering{arabic}
+    \section*{Introduction}
+    Dans ce TP nous allon modéliser différents problèmes de probabilité et statistique en python
+    \section{Première partie : Régression linéaire}
+    Cette partie correspond au fichier AuthierSaidanePart1.py
+    \subsection{Régression Linéaire simple}
+    Soit le modèle linéire suivant : 
+    \begin{equation*}
+        Y_1=\beta_0+\beta_1x_i
+    \end{equation*}
+    Avant de calculer le coeficient de régression nous avons créer une fonction moyenne.
+    \begin{lstlisting}
+        def moyenne(tab):
+            return sum(tab)/len(tab)
+    \end{lstlisting}
+    Ainsi nous pouvons faire la moyenne de différentes valeurs. 
+    Une fois la fonction moyenne codée on peut faire la fonction les coeficients de régressions.
+    Voici la formule du coeficient de régression : 
+    \begin{equation*}
+        a=\frac{\sum^{n}_{i=1} (x_i-\bar{x})(y_1-\bar{y})}{\sum^{n}_{i=1} (x_i-\bar{x})^2}
+    \end{equation*}
+    \begin{equation*}
+        b=\bar{y}-a\bar{x}
+    \end{equation*}
+    En python celà se traduit par : 
+    \begin{lstlisting}
+        def coef_regression(tab1, tab2):
+            beta_1 = 0
+            temp1 = 0
+            beta_0 = 0
+            temp2 = 0
+            for i in range(0, len(tab1)):
+                temp1 += (tab1[i]-moyenne(tab1))*(tab2[i]-moyenne(tab2))
+                temp2 += (tab1[i]-moyenne(tab1))**2
+            beta_1 = temp1/temp2
+            beta_0 = moyenne(tab2)-beta_1*moyenne(tab1)
+            return (beta_0, beta_1)
+    \end{lstlisting}
+    Les deux tableaux en paramètres de notre fonction sont les échantillons du sujet.
+    beta\_0 correspond à $b$ et beta\_1 correspond à $a$.
+    On obtient : \\
+    b=0.5733333333333334 \\
+    a=16.799999999999997 \\
+    \newpage
+    Pour la représentation graphique nous avons utilisé l'outil \href{https://matplotlib.org/api/pyplot_api.html}{pyplot} de la bibliothèque \href{https://matplotlib.org}{matplotlib}.
+    \begin{lstlisting}
+        coefs = coef_regression(x_i, y_i)
+        x = np.linspace(40, 100)
+        plt.plot(x, coefs[0]+coefs[1]*x)
+        plt.scatter(x_i, y_i, label="Nuage de points")
+        p = np.polyfit(x_i, y_i, 1)
+        plt.plot(x, p[1]+p[0]*x, label="Droite de regression")
+        plt.legend()
+        plt.title("Nuage de points et droite de regression")
+        plt.show()
+    \end{lstlisting} 
+    On obtient le graphique suivant : \\
+    \includegraphics{regre.png}
+    \newpage
+    Soit le modèle vectoriel suivant : 
+    \begin{equation*}
+        y=A\beta
+    \end{equation*}
+    Pour pouvoir faire des opérations sur les matrices nous avons utilisé la bibliothèque \href{https://numpy.org}{numpy}.
+    \\ Nous avons coder la formule $(A^TA)^{-1}A^Ty)$. \\
+    Tout d'abord nous avons implémenter deux petites fonctions permettant de determiné $A$, $A^T$ et $Y$.
+    \begin{lstlisting}
+        def matA(x):
+            vect = np.ones(len(x))
+            Atranspose = np.vstack((vect, x))
+            A = np.transpose(Atranspose)
+            return (A,Atranspose)
+        def matY(y):
+            return np.matrix(y_i).transpose()
+    \end{lstlisting}
+    Ensuite en deux opérations nous avons calculer $A^TA$ et $(A^TA)^-1$.
+    \begin{lstlisting}
+        A_transposeA = np.dot(A_transpose, A)
+        inv_ATA = np.linalg.inv(A_transposeA)
+    \end{lstlisting}
+    Pour finir nous avons implémenter la formule demandé : 
+    \begin{lstlisting}
+        def matBeta(inv,Atranspose,Y):
+            B1=np.dot(inv,Atranspose)
+            B2=np.dot(B1,Y)
+            return np.asarray(B2).reshape(-1)
+    \end{lstlisting}
+    On obtien ainsi Beta : [16.8         0.57333333] \\
+    Ansi que la graphique suivant : (voir page suivante)\\
+    \includegraphics{regre2.png}
+    \newpage
+    \subsection{Régression linéaire et descente de gradient}
+
+\end{document}
