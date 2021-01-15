@@ -138,5 +138,82 @@
     \includegraphics{regre2.png}
     \newpage
     \subsection{Régression linéaire et descente de gradient}
+    \newpage
+    \section{Deuxième partie: Etude et manipulation de lois de probailités}
+    \subsection{Loi Binomiale}
+    Nous avons modéliser en python une loi binomiale, pour celà nous avons utiliser la fonction python \href{https://koor.fr/Python/API/scientist/numpy.random/binomial.wp}{np.random.binomial}.
+    \begin{lstlisting}
+        def binomial (n,p):
+            valeur = []
+            binom = []
+            for i in range(100):
+                binom.append(np.random.binomial(n, p))
 
+            for i in range(100):
+                valeur.append(binom.count(i))
+    
+        return valeur
+    \end{lstlisting}
+    Enusuite on ajoute les 3 expériences.
+    \begin{lstlisting}
+        exp1 = binomial(30, 0.5)
+        exp2 = binomial(30, 0.7)
+        exp3 = binomial(50, 0.4)
+    \end{lstlisting}
+    On obtient ainsi le résultat suivant : (page suivante)\\
+    \includegraphics{LoiBinom.png}
+    \newpage
+    \subsection{Loi Normale univariée}
+    \subsection{Simulation de données à partir d'une loi}
+    \subsubsection{Cas de la loi Normale}
+    \subsection{Estimation de densité}
+    \subsubsection{Cas de la loi Normale}
+    \subsubsection{Cas de la loi exponentielle}
+    \newpage
+    \section{Troisième partie: Intervalle de confiance}
+    \subsection{Probléme 1}
+    On calcul la moyenne empirique : 
+    \begin{lstlisting}
+        moyenne = sum(poids)/len(poids)
+    \end{lstlisting}
+    Ensuite on affiche l'histogramme grace aux fonctions python et on obtien : \\
+    \includegraphics{hist.png} 
+    \newpage
+    On calcul l'écart type : 
+    \begin{lstlisting}
+        def ecart_type_emp(data):
+            moyenne = sum(data)/len(data)
+            somme = 0
+            for valeur in data:
+                somme += (valeur-moyenne)**2
+            return sqrt(somme/(len(data)-1))
+    \end{lstlisting}
+    L'intervalle à 95\% et 99\% on utilise les formules classisques. Par exemple, pour l'intervalle à 95\%,
+    \begin{lstlisting}
+        intervalC95 = [moyenne - interval95*et/sqrt(len(poids)),
+        moyenne + interval95*et/sqrt(len(poids))]
+    \end{lstlisting}
+    \subsection{Probléme 2}
+    Pour calculer l'intervalle de confiance : 
+    \begin{lstlisting}
+        n = 500
+        proba = 95/n
+        ecart_type = sqrt(proba*(1-proba)/n)
+        quantile = 2.576
+
+        intervalC99 = [proba-quantile*ecart_type/sqrt(n), proba+quantile*ecart_type/sqrt(n)]
+        print(f"Compagnie : Interval a 99% = {intervalC99}")
+    \end{lstlisting}
+    La proportion d'individus satisfaits de la compagnie aérienne est comprise entre 18.8\% et 19.2\%. 
+    \subsection{Probléme 3}
+    Nous avons pris un effectif de 100.
+    \begin{lstlisting}
+        n = 100
+        binomiale = np.random.binomial(n, 0.5, 500)
+        ecart_type = sqrt(100*0.5*(1-0.5))
+        moyenne = sum(binomiale)/len(binomiale)
+
+        intervalC95 = [moyenne - 1.96*ecart_type/sqrt(n), moyenne + 1.96*ecart_type/sqrt(n)]
+        print(f"Binomiale : interval a 95% = {intervalC95}")
+    \end{lstlisting}
 \end{document}
